@@ -1,8 +1,7 @@
-import IBookCreateDto from "../../interfaces/dto/IBookCreateDto";
-import IBook from "../../interfaces/IBook";
+import IBook from "../../domain/entities/IBook";
 
 interface IBookService {
-    createNewBook(book: IBookCreateDto): Promise<void>;
+    createNewBook(book: IBook): Promise<void>;
     getBookById(id: number): Promise<IBook>;
     getAllBooks(): Promise<IBook[]>;
 }

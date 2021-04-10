@@ -1,15 +1,16 @@
-import IBookCreateDto from "../../interfaces/dto/IBookCreateDto";
-import IBook from "../../interfaces/IBook";
+import uuid from "uuid";
+
+import IBook from "../../domain/entities/IBook";
 import IRepository from "../../repositories/interfaces/IRepository";
 import IBookService from "../interfaces/IBookService";
 
 export interface IBookServiceDeps {
-    bookRepository: IRepository<IBook, IBookCreateDto>;
+    bookRepository: IRepository<IBook>
 }
 
 class BookService implements IBookService {
 
-    private repo: IRepository<IBook, IBookCreateDto>;
+    private repo: IRepository<IBook>;
 
     constructor(deps: IBookServiceDeps) {
         this.repo = deps.bookRepository;
@@ -19,27 +20,35 @@ class BookService implements IBookService {
         TODO: Improve validation. This is crude for now, I can defer this until later
         as it's just a demo.
     */
-    async createNewBook(book: IBookCreateDto): Promise<void> {
+    public async createNewBook(book: IBook): Promise<void> {
 
-        if (!book.name || !book.price) {
+        if (!book.title || !book.price) {
             throw new Error("You must specify a name and a price");
         }
 
-        // Validation
-        if (book.name.length < 5) {
+        if (book.title.length < 5) {
             throw new Error("Book name must be greater than 5 characters");
         }
 
-        await this.repo.insert(book);
+        const newBook: IBook = {
+            ...book,
+            uuid: this.generateUuid()
+        }
+
+        return this.repo.insert(newBook);
 
     }
 
-    getBookById(id: number): Promise<IBook> {
+    public getBookById(id: number): Promise<IBook> {
         return this.repo.getById(id);
     }
 
-    getAllBooks(): Promise<IBook[]> {
+    public getAllBooks(): Promise<IBook[]> {
         return this.repo.get();
+    }
+
+    private generateUuid(): string {
+        return uuid.v4();
     }
 
 }

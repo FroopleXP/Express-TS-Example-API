@@ -1,5 +1,5 @@
-interface IAuthor {
-    id: number;
+type IAuthor = {
+    id?: number;
     name: string;
 }
 

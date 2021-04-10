@@ -4,7 +4,8 @@ import handleRouteErrors from "./utils/handleRouteErrors";
 import BookController, { IBookController } from "./controllers/BookController";
 import BookRoute from "./routes/BookRoute";
 
-import morgan, { format } from "morgan";
+// TODO: Is there anyway to load this conditionally? We only need it for development
+import morgan from "morgan";
 
 export interface IExpressAppDeps {
     bookService: IBookService

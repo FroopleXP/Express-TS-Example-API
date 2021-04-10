@@ -1,5 +1,6 @@
 interface IBook {
-    id: number;
+    id?: number;
+    uuid?: string;
     title: string;
     price: number;
 }
