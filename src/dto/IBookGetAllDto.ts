@@ -1,7 +1,7 @@
 import IBookDto from "./IBookDto";
 
-interface IGetAllBooksDto {
+interface IBookGetAllDto {
     books: IBookDto[]
 }
 
-export default IGetAllBooksDto;
+export default IBookGetAllDto;

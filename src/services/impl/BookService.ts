@@ -18,8 +18,6 @@ class BookService implements IBookService {
 
         const book: IBook = await this.getBookByUuid(uuid);
 
-        console.log(book);
-
         if (!book || book.id === undefined) {
             throw new EntityNotFoundException("Book does not exist with that UUID");
         }
@@ -36,11 +34,13 @@ class BookService implements IBookService {
             throw new EntityNotFoundException("Book does not exist");
         }
 
-        if (!update.title || !update.price) {
+        const bookUpdate: IBook = { ...currentBook, ...update };
+
+        if (!bookUpdate.title || !update.price) {
             throw new EntityInvalidException("You must specify a name and a price");
         }
 
-        if (update.title.length < 5) {
+        if (bookUpdate.title.length < 5) {
             throw new EntityInvalidException("Book name must be greater than 5 characters");
         }
 

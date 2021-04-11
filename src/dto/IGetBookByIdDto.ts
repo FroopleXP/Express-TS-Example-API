@@ -1,5 +1,5 @@
-interface IGetBookByIdDto {
+interface IBookGetByIdDto {
     uuid: string;
 }
 
-export default IGetBookByIdDto;
+export default IBookGetByIdDto;

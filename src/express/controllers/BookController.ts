@@ -1,20 +1,22 @@
-import { Request, Response, NextFunction } from "express";
+import Express, { Request, Response, NextFunction } from "express";
 import IBookCreateDto from "../../dto/IBookCreateDto";
 import ICreateNewBookDto from "../../dto/IBookCreateDto";
 
 import IBookService from "../../services/interfaces/IBookService";
 import IBook from "../../domain/entities/IBook";
-import IGetAllBooksDto from "../../dto/IGetAllBooksDto";
+import IGetAllBooksDto from "../../dto/IBookGetAllDto";
 import IBookDto from "../../dto/IBookDto";
 import IGetBookByIdDto from "../../dto/IGetBookByIdDto";
 import EntityNotFoundException from "../../common/exceptions/EntityNotFoundException";
 import IBookUpdateDto from "../../dto/IBookUpdateDto";
+import IBookGetByIdDto from "../../dto/IGetBookByIdDto";
+
 
 export interface IBookController {
     createNewBook(req: Request<ICreateNewBookDto>, res: Response<IBookDto>, next: NextFunction): Promise<void>;
     getAllBooks(req: Request, res: Response<IGetAllBooksDto>, next: NextFunction): Promise<void>;
     getBookByUuid(req: Request<IGetBookByIdDto>, res: Response<IBookDto>, next: NextFunction): Promise<void>;
-    updateBookByUuid(req: Request<IBookUpdateDto>, res: Response<IBookDto>, next: NextFunction): Promise<void>;
+    updateBookByUuid(req: Request<{ uuid: string }, any, IBookUpdateDto>, res: Response<IBookDto>, next: NextFunction): Promise<void>;
     deleteBookByUuid(req: Request<IGetBookByIdDto>, res: Response, next: NextFunction): Promise<void>;
 }
 
@@ -50,6 +52,7 @@ const BookController = (deps: IBookControllerDeps): IBookController => {
                 next(err);
             }
         },
+
         createNewBook: async (req: Request<IBookCreateDto>, res: Response<IBookDto>, next: NextFunction): Promise<void> => {
             try {
 
@@ -73,11 +76,12 @@ const BookController = (deps: IBookControllerDeps): IBookController => {
                 next(err);
             }
         },
+
         // TODO: Is there perhaps a better way to return rather than if / else branching?
-        getBookByUuid: async (req: Request<IGetBookByIdDto>, res: Response<IBookDto>, next: NextFunction): Promise<void> => {
+        getBookByUuid: async (req: Request<IBookGetByIdDto>, res: Response<IBookDto>, next: NextFunction): Promise<void> => {
             try {
 
-                const body: IGetBookByIdDto = req.params;
+                const body: IGetBookByIdDto = req.body;
                 const book: IBook = await bookService.getBookByUuid(body.uuid);
 
                 if (!book) {
@@ -110,23 +114,30 @@ const BookController = (deps: IBookControllerDeps): IBookController => {
             }
         },
 
-        updateBookByUuid: async (req: Request<IBookUpdateDto>, res: Response<IBookDto>, next: NextFunction): Promise<void> => {
+        updateBookByUuid: async (req: Request<{ uuid: string }, any, IBookUpdateDto>, res: Response<IBookDto>, next: NextFunction): Promise<void> => {
             try {
 
-                const body: IBookUpdateDto = { ...req.params, ...req.body };
+                const uuid: string = req.params.uuid;
+                const body: IBookUpdateDto = req.body;
 
-                const updateBook: IBook = await bookService.updateBookByUuid(body.uuid, { title: body.name, price: body.price });
+                const book: IBook = {
+                    title: body.name,
+                    price: body.price
+                }
+
+                const update: IBook = await bookService.updateBookByUuid(uuid, book);
 
                 res.status(200).json({
-                    uuid: updateBook.uuid || "",
-                    name: updateBook.title,
-                    price: updateBook.price
+                    name: update.title,
+                    uuid: update.uuid || "",
+                    price: update.price
                 });
 
             } catch (err) {
                 next(err);
             }
         }
+
     }
 }
 

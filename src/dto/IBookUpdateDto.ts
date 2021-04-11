@@ -1,7 +1,6 @@
-import IBookCreateDto from "./IBookCreateDto";
-
-interface IBookUpdateDto extends IBookCreateDto {
-    uuid: string;
+interface IBookUpdateDto {
+    name: string;
+    price: number;
 }
 
 export default IBookUpdateDto;
