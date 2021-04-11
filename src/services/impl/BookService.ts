@@ -17,7 +17,7 @@ class BookService implements IBookService {
         TODO: Improve validation. This is crude for now, I can defer this until later
         as it's just a demo.
     */
-    public async createNewBook(book: IBook): Promise<void> {
+    public async createNewBook(book: IBook): Promise<IBook> {
 
         if (!book.title || !book.price) {
             throw new Error("You must specify a name and a price");

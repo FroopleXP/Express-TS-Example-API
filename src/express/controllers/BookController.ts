@@ -10,7 +10,7 @@ import IGetBookByIdDto from "../../dto/IGetBookByIdDto";
 
 export interface IBookController {
     getAllBooks(req: Request, res: Response<IGetAllBooksDto>, next: NextFunction): Promise<void>;
-    createNewBook(req: Request<ICreateNewBookDto>, res: Response, next: NextFunction): Promise<void>;
+    createNewBook(req: Request<ICreateNewBookDto>, res: Response<IBookDto>, next: NextFunction): Promise<void>;
     getBookByUuid(req: Request<IGetBookByIdDto>, res: Response<IBookDto>, next: NextFunction): Promise<void>;
 }
 
@@ -46,7 +46,7 @@ const BookController = (deps: IBookControllerDeps): IBookController => {
                 next(err);
             }
         },
-        createNewBook: async (req: Request<IBookCreateDto>, res: Response, next: NextFunction): Promise<void> => {
+        createNewBook: async (req: Request<IBookCreateDto>, res: Response<IBookDto>, next: NextFunction): Promise<void> => {
             try {
 
                 const body: IBookCreateDto = req.body;
@@ -57,9 +57,13 @@ const BookController = (deps: IBookControllerDeps): IBookController => {
                     price: body.price
                 }
 
-                await deps.bookService.createNewBook(newBook);
+                const savedBook: IBook = await deps.bookService.createNewBook(newBook);
 
-                res.sendStatus(201);
+                res.status(201).json({
+                    name: savedBook.title,
+                    uuid: savedBook.uuid || "",
+                    price: savedBook.price
+                });
 
             } catch (err) {
                 next(err);

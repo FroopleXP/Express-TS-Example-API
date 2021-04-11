@@ -12,9 +12,10 @@ class BookRepository implements IBookRespository {
         return Promise.resolve(this.repo.filter(book => book.uuid == uuid)[0]);
     }
 
-    insert(entity: IBook): Promise<void> {
-        this.repo.push({ ...entity, id: this.repo.length });
-        return Promise.resolve();
+    insert(entity: IBook): Promise<IBook> {
+        const newEntity: IBook = { ...entity, id: this.repo.length };
+        this.repo.push(newEntity);
+        return Promise.resolve(newEntity);
     }
 
     removeById(id: number): Promise<void> {
