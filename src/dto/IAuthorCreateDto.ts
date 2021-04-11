@@ -1,3 +1,0 @@
-interface IAuthorCreateDto {
-    name: string;
-}

@@ -7,12 +7,14 @@ import IBook from "../../domain/entities/IBook";
 import IGetAllBooksDto from "../../dto/IGetAllBooksDto";
 import IBookDto from "../../dto/IBookDto";
 import IGetBookByIdDto from "../../dto/IGetBookByIdDto";
-
+import EntityNotFoundException from "../../common/exceptions/EntityNotFoundException";
+import IBookUpdateDto from "../../dto/IBookUpdateDto";
 
 export interface IBookController {
-    getAllBooks(req: Request, res: Response<IGetAllBooksDto>, next: NextFunction): Promise<void>;
     createNewBook(req: Request<ICreateNewBookDto>, res: Response<IBookDto>, next: NextFunction): Promise<void>;
+    getAllBooks(req: Request, res: Response<IGetAllBooksDto>, next: NextFunction): Promise<void>;
     getBookByUuid(req: Request<IGetBookByIdDto>, res: Response<IBookDto>, next: NextFunction): Promise<void>;
+    updateBookByUuid(req: Request<IBookUpdateDto>, res: Response<IBookDto>, next: NextFunction): Promise<void>;
     deleteBookByUuid(req: Request<IGetBookByIdDto>, res: Response, next: NextFunction): Promise<void>;
 }
 
@@ -79,19 +81,21 @@ const BookController = (deps: IBookControllerDeps): IBookController => {
                 const book: IBook = await bookService.getBookByUuid(body.uuid);
 
                 if (!book) {
-                    res.sendStatus(404);
-                } else {
-                    res.status(200).json({
-                        name: book.title,
-                        price: book.price,
-                        uuid: book.uuid || ""
-                    });
+                    throw new EntityNotFoundException("Book does not exist");
                 }
+
+                res.status(200).json({
+                    name: book.title,
+                    price: book.price,
+                    uuid: book.uuid || ""
+                });
+
 
             } catch (err) {
                 next(err);
             }
         },
+
         deleteBookByUuid: async (req: Request<IGetBookByIdDto>, res: Response, next: NextFunction): Promise<void> => {
             try {
 
@@ -100,6 +104,24 @@ const BookController = (deps: IBookControllerDeps): IBookController => {
                 await bookService.removeBookByUuid(body.uuid);
 
                 res.sendStatus(200);
+
+            } catch (err) {
+                next(err);
+            }
+        },
+
+        updateBookByUuid: async (req: Request<IBookUpdateDto>, res: Response<IBookDto>, next: NextFunction): Promise<void> => {
+            try {
+
+                const body: IBookUpdateDto = { ...req.params, ...req.body };
+
+                const updateBook: IBook = await bookService.updateBookByUuid(body.uuid, { title: body.name, price: body.price });
+
+                res.status(200).json({
+                    uuid: updateBook.uuid || "",
+                    name: updateBook.title,
+                    price: updateBook.price
+                });
 
             } catch (err) {
                 next(err);

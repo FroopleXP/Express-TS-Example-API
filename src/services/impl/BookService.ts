@@ -14,6 +14,40 @@ class BookService implements IBookService {
 
     constructor(private readonly _deps: IBookServiceDeps) { }
 
+    async updateBookByUuid(uuid: string, update: IBook): Promise<IBook> {
+
+        const book: IBook = await this.getBookByUuid(uuid);
+
+        console.log(book);
+
+        if (!book || book.id === undefined) {
+            throw new EntityNotFoundException("Book does not exist with that UUID");
+        }
+
+        return await this.updateBookById(book.id, update);
+
+    }
+
+    async updateBookById(id: number, update: IBook): Promise<IBook> {
+
+        const currentBook: IBook = await this.getBookById(id);
+
+        if (!currentBook) {
+            throw new EntityNotFoundException("Book does not exist");
+        }
+
+        if (!update.title || !update.price) {
+            throw new EntityInvalidException("You must specify a name and a price");
+        }
+
+        if (update.title.length < 5) {
+            throw new EntityInvalidException("Book name must be greater than 5 characters");
+        }
+
+        return this._deps.bookRepository.updateById(id, { ...update, uuid: currentBook.uuid });
+
+    }
+
     async removeBookByUuid(uuid: string): Promise<void> {
 
         const book: IBook = await this.getBookByUuid(uuid);
@@ -29,6 +63,7 @@ class BookService implements IBookService {
     /*
         TODO: Improve validation. This is crude for now, I can defer this until later
         as it's just a demo.
+        TODO: Port it out - we'll also need it for updating
     */
     public async createNewBook(book: IBook): Promise<IBook> {
 

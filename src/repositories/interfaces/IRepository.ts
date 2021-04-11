@@ -3,6 +3,7 @@ interface IRepository<T> {
     removeById(id: number): Promise<void>;
     getById(id: number): Promise<T>;
     get(): Promise<T[]>;
+    updateById(id: number, update: T): Promise<T>;
 }
 
 export default IRepository;

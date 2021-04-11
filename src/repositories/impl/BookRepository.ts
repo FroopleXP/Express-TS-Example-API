@@ -8,6 +8,27 @@ class BookRepository implements IBookRespository {
     constructor() {
         this.repo = [];
     }
+
+    async updateById(id: number, update: IBook): Promise<IBook> {
+        const book: IBook = await this.getById(id);
+        if (!book) {
+            return Promise.reject(new Error("Book does not exist"));
+        }
+
+        const bookUpdate: IBook = { ...book, ...update, id: book.id };
+        const _repo: IBook[] = [...this.repo]
+
+        this.repo = _repo.map((_book) => {
+            if (_book.id === id) {
+                return bookUpdate;
+            }
+            return _book;
+        });
+
+        return Promise.resolve(bookUpdate);
+
+    }
+
     getBookByUuid(uuid: string): Promise<IBook> {
         return Promise.resolve(this.repo.filter(book => book.uuid == uuid)[0]);
     }
