@@ -1,12 +1,15 @@
 import IBook from "../../domain/entities/IBook";
-import IRepository from "../interfaces/IRepository";
+import IBookRespository from "../interfaces/IBookRepository";
 
-class BookRepository implements IRepository<IBook> {
+class BookRepository implements IBookRespository {
 
     private repo: IBook[];
 
     constructor() {
         this.repo = [];
+    }
+    getBookByUuid(uuid: string): Promise<IBook> {
+        return Promise.resolve(this.repo.filter(book => book.uuid == uuid)[0]);
     }
 
     insert(entity: IBook): Promise<void> {

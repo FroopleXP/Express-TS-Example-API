@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction, response } from "express";
+import { Request, Response, NextFunction } from "express";
 import IBookCreateDto from "../../dto/IBookCreateDto";
 import ICreateNewBookDto from "../../dto/IBookCreateDto";
 
@@ -11,18 +11,18 @@ import IGetBookByIdDto from "../../dto/IGetBookByIdDto";
 export interface IBookController {
     getAllBooks(req: Request, res: Response<IGetAllBooksDto>, next: NextFunction): Promise<void>;
     createNewBook(req: Request<ICreateNewBookDto>, res: Response, next: NextFunction): Promise<void>;
-    getBookById(req: Request<IGetBookByIdDto>, res: Response<IBookDto>, next: NextFunction): Promise<void>;
+    getBookByUuid(req: Request<IGetBookByIdDto>, res: Response<IBookDto>, next: NextFunction): Promise<void>;
 }
 
 export interface IBookControllerDeps {
-    bookService: IBookService
+    bookService: IBookService,
 }
 
 // TODO: Could this perhaps be written more like a React FC? BookController: Controller<IBookControllerDeps>
 const BookController = (deps: IBookControllerDeps): IBookController => {
 
     const {
-        bookService
+        bookService,
     } = deps;
 
     return {
@@ -66,11 +66,11 @@ const BookController = (deps: IBookControllerDeps): IBookController => {
             }
         },
         // TODO: Is there perhaps a better way to return rather than if / else branching?
-        getBookById: async (req: Request<IGetBookByIdDto>, res: Response<IBookDto>, next: NextFunction): Promise<void> => {
+        getBookByUuid: async (req: Request<IGetBookByIdDto>, res: Response<IBookDto>, next: NextFunction): Promise<void> => {
             try {
 
                 const body: IGetBookByIdDto = req.params;
-                const book: IBook = await bookService.getBookById(body.id);
+                const book: IBook = await bookService.getBookByUuid(body.uuid);
 
                 if (!book) {
                     res.sendStatus(404);

@@ -1,20 +1,17 @@
-import uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 import IBook from "../../domain/entities/IBook";
+import IBookRespository from "../../repositories/interfaces/IBookRepository";
 import IRepository from "../../repositories/interfaces/IRepository";
 import IBookService from "../interfaces/IBookService";
 
 export interface IBookServiceDeps {
-    bookRepository: IRepository<IBook>
+    bookRepository: IBookRespository
 }
 
 class BookService implements IBookService {
 
-    private repo: IRepository<IBook>;
-
-    constructor(deps: IBookServiceDeps) {
-        this.repo = deps.bookRepository;
-    }
+    constructor(private readonly _deps: IBookServiceDeps) { }
 
     /*
         TODO: Improve validation. This is crude for now, I can defer this until later
@@ -32,25 +29,24 @@ class BookService implements IBookService {
 
         const newBook: IBook = {
             ...book,
-            uuid: this.generateUuid()
+            uuid: uuidv4()
         }
 
-        return this.repo.insert(newBook);
+        return this._deps.bookRepository.insert(newBook);
 
     }
 
     public getBookById(id: number): Promise<IBook> {
-        return this.repo.getById(id);
+        return this._deps.bookRepository.getById(id);
+    }
+
+    public getBookByUuid(uuid: string): Promise<IBook> {
+        return this._deps.bookRepository.getBookByUuid(uuid);
     }
 
     public getAllBooks(): Promise<IBook[]> {
-        return this.repo.get();
+        return this._deps.bookRepository.get();
     }
-
-    private generateUuid(): string {
-        return uuid.v4();
-    }
-
 }
 
 export default BookService;

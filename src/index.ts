@@ -2,11 +2,11 @@ import IBook from "./domain/entities/IBook";
 import ExpressHttpService from "./http/impl/ExpressHttpService";
 import IHttpService from "./http/interfaces/IHttpService";
 import BookRepository from "./repositories/impl/BookRepository";
-import IRepository from "./repositories/interfaces/IRepository";
+import IBookRespository from "./repositories/interfaces/IBookRepository";
 import BookService from "./services/impl/BookService";
 import IBookService from "./services/interfaces/IBookService";
 
-const bookRepository: IRepository<IBook> = new BookRepository();
+const bookRepository: IBookRespository = new BookRepository();
 const bookService: IBookService = new BookService({ bookRepository });
 
 (async () => {

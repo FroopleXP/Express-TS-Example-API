@@ -1,5 +1,5 @@
 interface IGetBookByIdDto {
-    id: number;
+    uuid: string;
 }
 
 export default IGetBookByIdDto;
