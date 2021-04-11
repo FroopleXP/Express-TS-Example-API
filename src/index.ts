@@ -19,13 +19,7 @@ const bookService: IBookService = new BookService({ bookRepository });
             price: 1000
         }
 
-        const newBookOne: IBook = {
-            title: "Read this to become enlightened",
-            price: 6900
-        }
-
         await bookService.createNewBook(newBookZero);
-        await bookService.createNewBook(newBookOne);
 
         // Create / start HTTP service 
         const httpService: IHttpService = new ExpressHttpService({ bookService });

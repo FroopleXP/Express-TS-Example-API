@@ -16,6 +16,7 @@ const BookRoute = (deps: IBookRouteDeps): Express.Router => {
     route.get("/", bookController.getAllBooks);
     route.post("/", bookController.createNewBook);
     route.get("/:uuid", bookController.getBookByUuid);
+    route.delete("/:uuid", bookController.deleteBookByUuid);
 
     return route;
 

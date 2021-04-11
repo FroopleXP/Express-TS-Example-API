@@ -8,10 +8,12 @@ import IGetAllBooksDto from "../../dto/IGetAllBooksDto";
 import IBookDto from "../../dto/IBookDto";
 import IGetBookByIdDto from "../../dto/IGetBookByIdDto";
 
+
 export interface IBookController {
     getAllBooks(req: Request, res: Response<IGetAllBooksDto>, next: NextFunction): Promise<void>;
     createNewBook(req: Request<ICreateNewBookDto>, res: Response<IBookDto>, next: NextFunction): Promise<void>;
     getBookByUuid(req: Request<IGetBookByIdDto>, res: Response<IBookDto>, next: NextFunction): Promise<void>;
+    deleteBookByUuid(req: Request<IGetBookByIdDto>, res: Response, next: NextFunction): Promise<void>;
 }
 
 export interface IBookControllerDeps {
@@ -85,6 +87,19 @@ const BookController = (deps: IBookControllerDeps): IBookController => {
                         uuid: book.uuid || ""
                     });
                 }
+
+            } catch (err) {
+                next(err);
+            }
+        },
+        deleteBookByUuid: async (req: Request<IGetBookByIdDto>, res: Response, next: NextFunction): Promise<void> => {
+            try {
+
+                const body: IGetBookByIdDto = req.params;
+
+                await bookService.removeBookByUuid(body.uuid);
+
+                res.sendStatus(200);
 
             } catch (err) {
                 next(err);

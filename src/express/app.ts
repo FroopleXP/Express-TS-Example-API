@@ -1,11 +1,11 @@
+// TODO: Is there anyway to load this conditionally? We only need it for development
+import morgan from "morgan";
+
 import Express, { Router } from "express";
 import IBookService from "../services/interfaces/IBookService";
 import handleRouteErrors from "./utils/handleRouteErrors";
 import BookController, { IBookController } from "./controllers/BookController";
 import BookRoute from "./routes/BookRoute";
-
-// TODO: Is there anyway to load this conditionally? We only need it for development
-import morgan from "morgan";
 
 export interface IExpressAppDeps {
     bookService: IBookService
